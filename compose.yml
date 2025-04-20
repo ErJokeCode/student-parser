@@ -1,0 +1,58 @@
+services:
+  parser-db:
+    image: mongo
+    ports:
+      - 27071:27017
+    volumes:
+      - parser-db-data:/var/lib/parser-db-data
+    networks:
+      - web_network
+
+  parser:
+    build: ./
+    command: python src/main.py
+    ports:
+      - 8000:8000
+    depends_on:
+      parser-db:
+        condition: service_started
+    healthcheck:
+      test: "curl --fail http://localhost:8000/ping || exit"
+      interval: 10s
+      timeout: 30s
+      retries: 10
+    volumes:
+      - '.:/app/parser'
+    networks:
+      - web_network
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio_parser
+    restart: unless-stopped
+    ports:
+      - "9000:9000" # API порт (для SDK и CLI)
+      - "9001:9001" # Web-интерфейс (Console)
+    env_file:
+      - .env
+    environment:
+      MINIO_BROWSER_REDIRECT_URL: http://localhost:9001
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001" # Запуск сервера + консоль
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks:
+      - web_network
+
+volumes:
+  parser-db-data:
+  minio_data:
+
+
+networks:
+  web_network:
+    driver: bridge
