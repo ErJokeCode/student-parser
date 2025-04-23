@@ -119,12 +119,11 @@ class WorkerCollection(Generic[V, T]):
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Bad request for update item")
 
         res = self.__collection.update_one(keys, update_data, upsert=upsert)
-
+        item = self.__collection.find_one(keys)
         producer_kafka.add_task(KafkaTask(
-            id=str(res.upserted_id), type=TypeTask.UPDATE, collect=self.__collection.name))
+            id=str(item["_id"]), type=TypeTask.UPDATE, collect=self.__collection.name))
 
         if get_item:
-            item = self.__collection.find_one(keys)
             return self.__cls_db(**item)
         else:
             return None
@@ -159,11 +158,11 @@ class WorkerCollection(Generic[V, T]):
 
                     up_fl = create_filter(update_filter, dict_item)
 
-                    self.update_one(
-                        dict_keys=fl, update_data=up_fl, upsert=upsert)
+                    self.update_one(item, update_data=up_fl, upsert=upsert)
 
                 else:
-                    self.insert_one(item)
+                    add_item = self.__cls.model_validate(dict_item)
+                    self.insert_one(add_item)
 
         except Exception as e:
             print(e)
