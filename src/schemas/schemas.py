@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Annotated, Optional
 from pydantic import BaseModel, BeforeValidator, Field
@@ -125,6 +125,9 @@ class Student(BaseModel):
     status: bool | None = False
     type_of_cost: str | None = None
     type_of_education: str | None = None
+    created_at: datetime = Field(
+        default_factory=lambda x: datetime.now(timezone.utc)
+    )
     subjects: list[SubjectInStudent] = []
     online_course: list[InfoOnlineCourseInStudent] = []
 

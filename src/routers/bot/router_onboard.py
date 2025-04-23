@@ -1,8 +1,8 @@
 from bson import ObjectId
 from fastapi import APIRouter, HTTPException
 
-from config import worker_db
-from schemas import OnboardCourse, OnboardCourseInDB, OnboardSection, OnboardTopic
+from database.worker_db import worker_db
+from schemas.schemas import OnboardCourse, OnboardCourseInDB, OnboardSection, OnboardTopic
 
 
 router_bot_onboard = APIRouter(

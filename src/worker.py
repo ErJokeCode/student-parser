@@ -1,6 +1,7 @@
 import requests
-from config import worker_db, settings
-from schemas import HistoryUploadFileInDB
+from config import settings
+from database.worker_db import worker_db
+from schemas.schemas import HistoryUploadFileInDB
 
 
 def update_status_history(hist_info_db: HistoryUploadFileInDB, text_status: str):

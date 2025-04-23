@@ -5,11 +5,11 @@ import shutil
 from tempfile import SpooledTemporaryFile
 from fastapi import APIRouter, HTTPException, UploadFile
 from fastapi.responses import FileResponse, StreamingResponse
-from config import worker_db
+from database.worker_db import worker_db
 from database.core_s3 import s3_client
 from worker import update_status_history
 from routers.upload.online_course import parse_info_online_courses, update_info_from_inf, upload_report
-from schemas import HistoryUploadFile, HistoryUploadFileInDB, TypeFile
+from schemas.schemas import HistoryUploadFile, HistoryUploadFileInDB, TypeFile
 
 from routers.upload.student import upload_student
 from routers.upload.modeus import upload_modeus

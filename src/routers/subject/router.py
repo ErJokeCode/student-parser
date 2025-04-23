@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from config import worker_db
-from schemas import SubjectInDB
+from database.worker_db import worker_db
+from schemas.schemas import SubjectInDB
 
 
 router_subject = APIRouter(

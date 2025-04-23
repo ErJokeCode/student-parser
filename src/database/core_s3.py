@@ -10,7 +10,7 @@ from fastapi import UploadFile
 from types_aiobotocore_s3 import S3Client  # Типы для S3
 from botocore.config import Config
 
-from schemas import HistoryUploadFile, TypeFile
+from schemas.schemas import HistoryUploadFile, TypeFile
 from config import settings
 
 

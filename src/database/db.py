@@ -15,8 +15,9 @@ import hashlib
 from aiobotocore.session import get_session  # type: ignore
 from aiobotocore.client import AioBaseClient  # type: ignore
 
-from schemas import BaseModelInDB, HistoryUploadFile, HistoryUploadFileInDB, TypeFile
-
+from schemas.kafka_task import KafkaTask, TypeTask
+from schemas.schemas import BaseModelInDB, HistoryUploadFile, HistoryUploadFileInDB, TypeFile
+from kafka.core import producer_kafka
 
 V = TypeVar("V", bound=BaseModel)
 T = TypeVar("T", bound=BaseModelInDB)
@@ -77,11 +78,20 @@ class WorkerCollection(Generic[V, T]):
     def insert_one(self, item: V) -> T:
         item_id = self.__collection.insert_one(item.model_dump()).inserted_id
         item = self.__collection.find_one({"_id": ObjectId(item_id)})
+
+        producer_kafka.add_task(KafkaTask(
+            id=str(item_id), type=TypeTask.CREATE, collect=self.__collection.name))
+
         return self.__cls_db(**item)
 
     def insert_many(self, items: Sequence[V]) -> dict[str, str]:
         items = [item.model_dump() for item in items]
-        self.__collection.insert_many(items)
+        res = self.__collection.insert_many(items)
+
+        for r in res.inserted_ids:
+            producer_kafka.add_task(
+                KafkaTask(id=str(r), type=TypeTask.CREATE, collect=self.__collection.name))
+
         return {"status": "success"}
 
     def update_one(self, item: T | V | None = None, upsert: bool = False, dict_keys: dict = None, update_data: dict = None, get_item: bool = True, **keys_find) -> T | None:
@@ -109,6 +119,9 @@ class WorkerCollection(Generic[V, T]):
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Bad request for update item")
 
         res = self.__collection.update_one(keys, update_data, upsert=upsert)
+
+        producer_kafka.add_task(KafkaTask(
+            id=str(res.upserted_id), type=TypeTask.UPDATE, collect=self.__collection.name))
 
         if get_item:
             item = self.__collection.find_one(keys)
@@ -138,7 +151,6 @@ class WorkerCollection(Generic[V, T]):
             collect = self.__collection
             ids = collect.find().distinct(filter[0])
 
-            operations = []
             for item in data:
                 dict_item = item.model_dump()
 
@@ -147,13 +159,12 @@ class WorkerCollection(Generic[V, T]):
 
                     up_fl = create_filter(update_filter, dict_item)
 
-                    operations.append(
-                        UpdateOne(fl, {"$set": up_fl}, upsert=upsert))
-                else:
-                    operations.append(InsertOne(dict_item))
+                    self.update_one(
+                        dict_keys=fl, update_data=up_fl, upsert=upsert)
 
-            if len(operations) > 0:
-                collect.bulk_write(operations)
+                else:
+                    self.insert_one(item)
+
         except Exception as e:
             print(e)
             raise HTTPException(
@@ -166,11 +177,19 @@ class WorkerCollection(Generic[V, T]):
         if res.deleted_count == 0:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Item not found")
+
+        producer_kafka.add_task(
+            KafkaTask(id=str(id), type=TypeTask.DELETE, collect=self.__collection.name))
+
         return {"satatus": "success"}
 
     def delete_many(self, **kwargs) -> dict[str, str]:
         res = self.__collection.delete_many(kwargs)
-        return {"satatus": "success"}
+
+        producer_kafka.add_task(
+            KafkaTask(id="", type=TypeTask.DELETE, collect=self.__collection.name))
+
+        return {"status": "success"}
 
 
 class MongoDataBase():

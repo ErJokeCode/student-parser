@@ -1,6 +1,6 @@
 from bson import ObjectId
-from config import WorkerDataBase
-from schemas import DictNames, DictNamesInDB
+from database.worker_db import WorkerDataBase
+from schemas.schemas import DictNames, DictNamesInDB
 
 
 def add_dict_names(modeus: str, site_inf: str, file_course: str, worker_db: WorkerDataBase) -> DictNamesInDB:

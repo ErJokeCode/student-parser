@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from config import worker_db
-from schemas import InfoOnlineCourseInStudent, StudentInDB
+from database.worker_db import worker_db
+from schemas.schemas import InfoOnlineCourseInStudent, StudentInDB
 
 
 router_user = APIRouter(

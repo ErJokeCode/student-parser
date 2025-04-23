@@ -5,8 +5,8 @@ import pandas as pd  # type: ignore
 
 from database.core_s3 import s3_client
 from worker import update_status_history
-from schemas import HistoryUploadFileInDB, InfoGroupInStudent, Student
-from config import WorkerDataBase
+from schemas.schemas import HistoryUploadFileInDB, InfoGroupInStudent, Student
+from database.worker_db import WorkerDataBase
 
 _log = logging.getLogger(__name__)
 

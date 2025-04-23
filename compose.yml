@@ -32,7 +32,7 @@ services:
     restart: unless-stopped
     ports:
       - "9000:9000" # API порт (для SDK и CLI)
-      - "9001:9001" # Web-интерфейс (Console)
+      - "9002:9002" # Web-интерфейс (Console)
     env_file:
       - .env
     environment:
@@ -55,4 +55,6 @@ volumes:
 
 networks:
   web_network:
+    external: true
+    name: kafka-network
     driver: bridge

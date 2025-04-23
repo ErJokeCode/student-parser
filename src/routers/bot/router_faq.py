@@ -1,8 +1,8 @@
 from bson import ObjectId
 from fastapi import APIRouter, HTTPException
 
-from config import worker_db
-from schemas import FAQ, FAQTopic, FAQTopicInDB
+from database.worker_db import worker_db
+from schemas.schemas import FAQ, FAQTopic, FAQTopicInDB
 
 
 router_bot_faq = APIRouter(

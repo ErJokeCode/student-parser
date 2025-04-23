@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
-from config import worker_db
+from database.worker_db import worker_db
 from routers.online_course.dict_names import add_dict_names, update_dict_names, delete_dict_names
-from schemas import DictNames, DictNamesInDB, InfoOCInFile, InfoOCInFileInDB, InfoOnlineCourseInDB
+from schemas.schemas import DictNames, DictNamesInDB, InfoOCInFile, InfoOCInFileInDB, InfoOnlineCourseInDB
 
 
 router_course = APIRouter(

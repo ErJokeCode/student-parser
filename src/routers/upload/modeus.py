@@ -1,9 +1,9 @@
 from fastapi import HTTPException, UploadFile
 import numpy as np
 import pandas as pd
-from config import WorkerDataBase
+from database.worker_db import WorkerDataBase
 from worker import update_status_history
-from schemas import StudentInDB, StudentInTeam, Subject, SubjectInStudent, Team, TeamInSubjectInStudent, TypeFormSubject, HistoryUploadFileInDB
+from schemas.schemas import StudentInDB, StudentInTeam, Subject, SubjectInStudent, Team, TeamInSubjectInStudent, TypeFormSubject, HistoryUploadFileInDB
 
 
 def upload_modeus(file: UploadFile, hist: HistoryUploadFileInDB, worker_db: WorkerDataBase) -> dict[str, str]:

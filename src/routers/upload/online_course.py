@@ -3,10 +3,10 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
-from config import WorkerDataBase
+from database.worker_db import WorkerDataBase
 from database.core_s3 import s3_client
 from worker import update_status_history
-from schemas import HistoryUploadFileInDB, InfoOCInFile, InfoOCInFileInDB, InfoOnlineCourse, InfoOnlineCourseInDB, InfoOnlineCourseInStudent
+from schemas.schemas import HistoryUploadFileInDB, InfoOCInFile, InfoOCInFileInDB, InfoOnlineCourse, InfoOnlineCourseInDB, InfoOnlineCourseInStudent
 
 
 def parse_info_online_courses(worker_db: WorkerDataBase, hist: HistoryUploadFileInDB):
