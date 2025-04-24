@@ -1,6 +1,5 @@
-# Student-Voice-Backend
-Backend of student voice of the pairs evaluation project
-
+# Student-parser
+Хранение данных о студентах
 
 ## Содержание
 - [Технологии](#Технологии)
@@ -23,7 +22,7 @@ $ git clone ...
 Создать файл .env по примеру 
 
 ```sh
-CORS=<*, http://localhost, http://127.0.0.1> 
+CORS=<*, http://localhost, http://127.0.0.1>
 
 MY_URL=<http://localhost:8000>
 
@@ -38,6 +37,10 @@ MINIO_ROOT_USER=<minioadmin>
 MINIO_ROOT_PASSWORD=<minioadmin>
 MINIO_URL=<http://minio:9000>
 MINIO_BUCKET_NAME=<test>
+
+KAFKA_HOST=<kafka>
+KAFKA_PORT=<9092>
+KAFKA_TOPIC=<test>
 ```
 
 
